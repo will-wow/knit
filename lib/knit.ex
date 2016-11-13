@@ -44,6 +44,7 @@ defmodule Knit do
   end
 
   # Convert a list-type collection (list or tuple)
+  defp convert_list_collection(_, nil), do: []
   defp convert_list_collection(type, values) do
     # Handle the collection being in a map.
     # TODO: Make sure this is ordered by key.
@@ -52,6 +53,7 @@ defmodule Knit do
   end
 
   # If the collection is a map with string keys and model values.
+  defp convert_map_collection(_, nil), do: %{}
   defp convert_map_collection(type, values) do
     Enum.map(values, fn {key, value} ->
       {key, convert_field(type, value)}
@@ -59,6 +61,7 @@ defmodule Knit do
     |> Enum.into(%{})
   end
 
+  defp convert_field(_, nil), do: nil
   defp convert_field(type, value) do
     if function_exported?(type, :schema, 0) do
       # If the type is a model, populate the child struct.
