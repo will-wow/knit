@@ -3,14 +3,16 @@ require IEx
 defmodule KnitTest.Person do
   # use Knit.Schema
   @behaviour Knit.Model
-  defstruct ~w(full_name age favorite_colors address is_admin)a
+  defstruct ~w(full_name age favorite_colors address traits previous_addresses is_admin)a
 
   def schema do
     [full_name: :string,
      age: :integer,
      is_admin: :boolean,
      favorite_colors: [:string],
-     address: KnitTest.Address]
+     traits: %{map: :boolean},
+     address: KnitTest.Address,
+     previous_addresses: [KnitTest.Address]]
   end
 end
 
@@ -75,5 +77,40 @@ defmodule KnitTest do
       state: "The Moon",
       zip: "99999"
     }
+  end
+
+  test "convert map to list" do
+    person = Knit.populate(
+      KnitTest.Person,
+      %{"full_name" => "Jane",
+        "previous_addresses" => %{
+          "0" => %{
+            "street" => "123 Fake Street",
+            "city" => "Luner City Seven",
+            "state" => "The Moon",
+            "zip" => 99999},
+          "1" => %{
+            "street" => "123 Fake Street",
+            "city" => "Luner City Seven",
+            "state" => "The Moon",
+            "zip" => 99999}
+        }})
+
+    [address | _addresses ] = person.previous_addresses
+
+    assert address == %KnitTest.Address{
+      street: "123 Fake Street",
+      city: "Luner City Seven",
+      state: "The Moon",
+      zip: "99999"
+    }
+  end
+
+  test "handle map of arbitrary keys" do
+    assert Knit.populate(
+      KnitTest.Person,
+      %{"traits" => %{"cool" => "false",
+                      "smart" => "true"}}
+    ).traits == %{"cool" => false, "smart" => true}
   end
 end
