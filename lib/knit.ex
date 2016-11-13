@@ -72,6 +72,7 @@ defmodule Knit do
   defp convert_value(:string, value), do: convert_string(value)
   defp convert_value(:integer, value), do: convert_integer(value)
   defp convert_value(:float, value), do: convert_float(value)
+  defp convert_value(:boolean, value), do: convert_boolean(value)
   defp convert_value(:any, value), do: value
 
   defp convert_string(value) when is_binary(value), do: value
@@ -94,4 +95,17 @@ defmodule Knit do
       :error -> nil
     end
   end
+
+  defp convert_boolean(true), do: true
+  defp convert_boolean(false), do: false
+  defp convert_boolean(0), do: false
+  defp convert_boolean(0.0), do: false
+  defp convert_boolean(value) when is_binary(value) do
+    case String.downcase(value) do
+      "false" -> false
+      "" -> false
+      _ -> true
+    end
+  end
+  defp convert_boolean(_), do: true
 end
