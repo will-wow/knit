@@ -9,8 +9,8 @@ defmodule KnitTest.Person do
     [full_name: :string,
      age: :integer,
      is_admin: :boolean,
-     favorite_colors: [:string]]
-     # address: KnitTest.Address]
+     favorite_colors: [:string],
+     address: KnitTest.Address]
   end
 end
 
@@ -30,12 +30,6 @@ end
 defmodule KnitTest do
   use ExUnit.Case, async: true
   doctest Knit
-
-  # test "generating structs" do
-  #   IEx.pry
-  #   IO.inspect(%KnitTest.Person{})
-  #   assert %KnitTest.Person{}.__struct__
-  # end
 
   test "populate simple struct" do
     assert Knit.populate(KnitTest.Person, %{"full_name" => "Sarah"}).full_name == "Sarah"
@@ -61,9 +55,25 @@ defmodule KnitTest do
     assert Knit.populate(KnitTest.Person, %{"is_admin" => "false"}).is_admin == false
   end
 
-  # test "simple person" do
-  #   params = %{"name" => "Bob"}
+  test "convert arrays of primitives" do
+    assert Knit.populate(KnitTest.Person, %{"favorite_colors" => ["olive", 0]}).favorite_colors == ["olive", "0"]
+  end
 
-  #   assert Knit.populate(params, KnitTest.Person) == %KnitTest.SimplePerson{name: "Bob"}
-  # end
+  test "populate nested struc" do
+    assert Knit.populate(
+      KnitTest.Person,
+      %{"full_name" => "Jane",
+        "address" => %{
+          "street" => "123 Fake Street",
+          "city" => "Luner City Seven",
+          "state" => "The Moon",
+          "zip" => 99999
+        }}
+    ).address == %KnitTest.Address{
+      street: "123 Fake Street",
+      city: "Luner City Seven",
+      state: "The Moon",
+      zip: "99999"
+    }
+  end
 end
