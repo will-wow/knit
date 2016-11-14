@@ -29,4 +29,17 @@ defmodule Knit.Mixfile do
   defp deps do
     [{:exconstructor, "~> 1.0.2"}]
   end
+
+  defp description do
+    """
+    Transforms string maps into nested structs: knits strings into something useful.
+    """
+  end
+
+  defp package do
+    [name: :knit,
+     maintainers: ["Will Ockelmann-Wagner"],
+     licenses: ["MIT"],
+     links: %{"GitHub" => "https://github.com/whenther/knit"}]
+  end
 end

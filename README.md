@@ -13,6 +13,10 @@ to do something with it other than put it in a database is tricky, particularly 
 data. Knit lets you define your struct as a simple map, and lets you
 safely populate that struct without worrying about atom-based DDOS attacks.
 
+Behind the scenes, Knit uses [ExConstructor]() to do the magic of converting string maps to
+structs, even if the keys are in camelCase. Then Knit uses your types to try to convert
+the incoming data to match the schema - and just writes `nil` if it can't.
+
 ## Use
 First, define a module with a schema. The schema block should return a map with field names
 as keys and types as values.
@@ -66,11 +70,11 @@ assert Knit.populate(
 ```
 ### Primitives
 To type a field as a primitive, use one of these atoms:
-- :string
-- :integer
-- :float
-- :boolean
-- :any (to not try to convert the value, even if it's a map of string keys)
+- `:string`
+- `:integer`
+- `:float`
+- `:boolean`
+- `:any` (to not try to convert the value, even if it's a map of string keys)
 
 ### Enums
 To define an enum, pass a tuple with `:enum` as the first item and a
