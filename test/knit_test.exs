@@ -1,31 +1,27 @@
 require IEx
 
 defmodule KnitTest.Person do
-  # use Knit.Schema
-  @behaviour Knit.Model
-  defstruct ~w(full_name age favorite_colors address traits previous_addresses is_admin)a
+  use Knit.Schema
 
-  def schema do
-    [full_name: :string,
-     age: :integer,
-     is_admin: :boolean,
-     favorite_colors: [:string],
-     traits: %{map: :boolean},
-     address: KnitTest.Address,
-     previous_addresses: [KnitTest.Address]]
+  schema do
+    %{full_name: :string,
+      age: :integer,
+      is_admin: :boolean,
+      favorite_colors: [:string],
+      traits: %{map: :boolean},
+      address: KnitTest.Address,
+      previous_addresses: [KnitTest.Address]}
   end
 end
 
 defmodule KnitTest.Address do
-  # use Knit.Schema
-  @behaviour Knit.Model
-  defstruct ~w(street city state zip)a
+  use Knit.Schema
 
-  def schema do
-    [street: :string,
-     city: :string,
-     state: :string,
-     zip: :string]
+  schema do
+    %{street: :string,
+      city: :string,
+      state: :string,
+      zip: :string}
   end
 end
 
