@@ -9,6 +9,7 @@ defmodule KnitTest.Person do
       is_admin: :boolean,
       favorite_colors: [:string],
       traits: %{map: :boolean},
+      eye_color: {:enum, [blue: "blue", green: "green", brown: "brown"]},
       address: KnitTest.Address,
       previous_addresses: [KnitTest.Address]}
   end
@@ -55,6 +56,10 @@ defmodule KnitTest do
 
   test "convert arrays of primitives" do
     assert Knit.populate(KnitTest.Person, %{"favorite_colors" => ["olive", 0]}).favorite_colors == ["olive", "0"]
+  end
+
+  test "convert enums" do
+    assert Knit.populate(KnitTest.Person, %{"eye_color" => "blue"}).eye_color == :blue
   end
 
   test "populate nested struc" do

@@ -37,7 +37,7 @@ defmodule Knit do
         %{map: type} ->
           convert_map_collection(type, value)
         type ->
-          convert_field(type, value)
+          convert_type(type, value)
       end
 
     {field, new_value}
@@ -49,21 +49,21 @@ defmodule Knit do
     # Handle the collection being in a map.
     # TODO: Make sure this is ordered by key.
     values_list = if is_map(values), do: Map.values(values), else: values
-    Enum.map(values_list, &(convert_field(type, &1)))
+    Enum.map(values_list, &(convert_type(type, &1)))
   end
 
   # If the collection is a map with string keys and model values.
   defp convert_map_collection(_, nil), do: %{}
   defp convert_map_collection(type, values) do
     Enum.map(values, fn {key, value} ->
-      {key, convert_field(type, value)}
+      {key, convert_type(type, value)}
     end)
     |> Enum.into(%{})
   end
 
-  defp convert_field(_, nil), do: nil
-  defp convert_field(type, value) do
-    if function_exported?(type, :schema, 0) do
+  defp convert_type(_, nil), do: nil
+  defp convert_type(type, value) do
+    if is_atom(type) && function_exported?(type, :schema, 0) do
       # If the type is a model, populate the child struct.
       populate(type, value)
     else
@@ -76,6 +76,7 @@ defmodule Knit do
   defp convert_value(:integer, value), do: convert_integer(value)
   defp convert_value(:float, value), do: convert_float(value)
   defp convert_value(:boolean, value), do: convert_boolean(value)
+  defp convert_value({:enum, opts}, value) when is_list(opts), do: convert_enum(value, opts)
   defp convert_value(:any, value), do: value
 
   defp convert_string(value) when is_binary(value), do: value
@@ -111,4 +112,17 @@ defmodule Knit do
     end
   end
   defp convert_boolean(_), do: true
+
+  defp convert_enum(value, opts) do
+    keyword =
+      opts
+      |> Enum.find(fn {_, input_value} ->
+        input_value == value
+      end)
+
+      case keyword do
+        {atom, _} -> atom
+        nil -> nil
+      end
+  end
 end

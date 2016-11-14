@@ -14,7 +14,8 @@ data. Knit lets you define your struct as a simple map, and lets you
 safely populate that struct without worrying about atom-based DDOS attacks.
 
 ## Use
-First, define a module with a schema:
+First, define a module with a schema. The schema block should return a map with field names
+as keys and types as values.
 ```elixir
 defmodule KnitTest.Person do
   use Knit.Schema
@@ -25,6 +26,7 @@ defmodule KnitTest.Person do
       is_admin: :boolean,
       favorite_colors: [:string],
       traits: %{map: :boolean},
+      eye_color: {:enum, [blue: "blue", green: "green", brown: "brown"]},
       address: KnitTest.Address,
       previous_addresses: [KnitTest.Address]}
   end
@@ -48,6 +50,7 @@ data from the map.
 assert Knit.populate(
   KnitTest.Person,
   %{"full_name" => "Jane",
+    "eye_color" => "blue",
     "address" => %{
       "street" => "123 Fake Street",
       "city" => "Luner City Seven",
@@ -68,6 +71,11 @@ To type a field as a primitive, use one of these atoms:
 - :float
 - :boolean
 - :any (to not try to convert the value, even if it's a map of string keys)
+
+### Enums
+To define an enum, pass a tuple with `:enum` as the first item and a
+keyword list of `final_value: "input_value"`. Note that the input value can be a string
+or a number or whatever.
 
 ### Nested Structs
 To populate a nested struct, define a Knit module for the child, then add the 
