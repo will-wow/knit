@@ -7,6 +7,8 @@ defmodule Knit.Mixfile do
      elixir: "~> 1.3",
      build_embedded: Mix.env == :prod,
      start_permanent: Mix.env == :prod,
+     description: description(),
+     package: package(),
      deps: deps()]
   end
 
@@ -40,6 +42,6 @@ defmodule Knit.Mixfile do
     [name: :knit,
      maintainers: ["Will Ockelmann-Wagner"],
      licenses: ["MIT"],
-     links: %{"GitHub" => "https://github.com/whenther/knit"}]
+     links: %{"GitHub" => "https://github.com/AssetAvenue/knit"}]
   end
 end
