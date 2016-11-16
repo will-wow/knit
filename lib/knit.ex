@@ -76,46 +76,12 @@ defmodule Knit do
   end
 
   defp convert_value(_, nil), do: nil
-  defp convert_value(:string, value), do: convert_string(value)
-  defp convert_value(:integer, value), do: convert_integer(value)
-  defp convert_value(:float, value), do: convert_float(value)
-  defp convert_value(:boolean, value), do: convert_boolean(value)
+  defp convert_value(:string, value), do: Knit.StringType.convert(value)
+  defp convert_value(:integer, value), do: Knit.IntegerType.convert(value)
+  defp convert_value(:float, value), do:  Knit.FloatType.convert(value)
+  defp convert_value(:boolean, value), do:  Knit.BooleanType.convert(value)
   defp convert_value({:enum, opts}, value) when is_list(opts), do: convert_enum(value, opts)
   defp convert_value(:any, value), do: value
-
-  defp convert_string(value) when is_binary(value), do: value
-  defp convert_string(value), do: inspect(value)
-
-  defp convert_integer(value) when is_integer(value), do: value
-  defp convert_integer(value) when is_float(value), do: round(value)
-  defp convert_integer(value) when is_binary(value) do
-    case Integer.parse(value) do
-      {int, _} -> int
-      :error -> nil
-    end
-  end
-
-  defp convert_float(value) when is_float(value), do: value
-  defp convert_float(value) when is_integer(value), do: value / 1
-  defp convert_float(value) when is_binary(value) do
-    case Float.parse(value) do
-      {int, _} -> int
-      :error -> nil
-    end
-  end
-
-  defp convert_boolean(true), do: true
-  defp convert_boolean(false), do: false
-  defp convert_boolean(0), do: false
-  defp convert_boolean(0.0), do: false
-  defp convert_boolean(value) when is_binary(value) do
-    case String.downcase(value) do
-      "false" -> false
-      "" -> false
-      _ -> true
-    end
-  end
-  defp convert_boolean(_), do: true
 
   defp convert_enum(value, opts) do
     keyword =
