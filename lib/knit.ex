@@ -63,11 +63,15 @@ defmodule Knit do
 
   defp convert_type(_, nil), do: nil
   defp convert_type(type, value) do
-    if is_atom(type) && function_exported?(type, :schema, 0) do
-      # If the type is a model, populate the child struct.
-      populate(type, value)
-    else
-      convert_value(type, value)
+    cond do
+      is_atom(type) && function_exported?(type, :schema, 0) ->
+        # If the type is a model, populate the child struct.
+        populate(type, value)
+      is_atom(type) && function_exported?(type, :convert, 1) ->
+        # If the type is a custom type, use that to convert
+        convert_custom_type(type, value)
+      true ->
+        convert_value(type, value)
     end
   end
 
@@ -124,5 +128,9 @@ defmodule Knit do
         {atom, _} -> atom
         nil -> nil
       end
+  end
+
+  defp convert_custom_type(type, value) do
+    type.convert(value)
   end
 end

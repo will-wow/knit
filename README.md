@@ -22,7 +22,7 @@ First, define a module with a schema. The schema block should return a map with 
 as keys and types as values.
 ```elixir
 defmodule KnitTest.Person do
-  use Knit.Schema
+  use Knit.Model
 
   schema do
     %{full_name: :string,
@@ -31,19 +31,32 @@ defmodule KnitTest.Person do
       favorite_colors: [:string],
       traits: %{map: :boolean},
       eye_color: {:enum, [blue: "blue", green: "green", brown: "brown"]},
+      birth_date: KnitTest.DateType,
       address: KnitTest.Address,
       previous_addresses: [KnitTest.Address]}
   end
 end
 
 defmodule KnitTest.Address do
-  use Knit.Schema
+  use Knit.Model
 
   schema do
     %{street: :string,
       city: :string,
       state: :string,
       zip: :string}
+  end
+end
+
+defmodule KnitTest.DateType do
+  use Knit.Type
+
+  def convert(string) when is_binary(string) do
+    [year, month, day] = String.split(string, "-")
+
+    %{year: year,
+      month: month,
+      day: day}
   end
 end
 ```
@@ -84,6 +97,12 @@ or a number or whatever.
 ### Nested Structs
 To populate a nested struct, define a Knit module for the child, then add the 
 module name to the schema.
+
+### Custom types
+To define your own custom types, create a module and call `use Knit.Type` in it.
+Then define a convert method that takes an input and returns what you want.
+Make sure to handle any expected input types, as Knit won't catch any errors in
+the conversion.
 
 ### Collections
 For fields that are a collection of children, make the type a one-item collection

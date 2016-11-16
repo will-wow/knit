@@ -1,12 +1,13 @@
-defmodule Knit.Schema do
+defmodule Knit.Model do
   @moduledoc """
   Sets up schemas.
   """
+  @callback schema() :: any
 
   defmacro __using__(_) do
     quote do
       @behaviour Knit.Model
-      import Knit.Schema, only: [schema: 1]
+      import Knit.Model, only: [schema: 1]
     end
   end
 
@@ -27,7 +28,7 @@ defmodule Knit.Schema do
 
       # Add a struct to the calling module.
       Module.eval_quoted __ENV__, [
-        Knit.Schema.__defstruct__(struct_keys)
+        Knit.Model.__defstruct__(struct_keys)
       ]
     end
   end

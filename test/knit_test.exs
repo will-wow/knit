@@ -1,7 +1,7 @@
 require IEx
 
 defmodule KnitTest.Person do
-  use Knit.Schema
+  use Knit.Model
 
   schema do
     %{full_name: :string,
@@ -10,19 +10,32 @@ defmodule KnitTest.Person do
       favorite_colors: [:string],
       traits: %{map: :boolean},
       eye_color: {:enum, [blue: "blue", green: "green", brown: "brown"]},
+      birth_date: KnitTest.DateType,
       address: KnitTest.Address,
       previous_addresses: [KnitTest.Address]}
   end
 end
 
 defmodule KnitTest.Address do
-  use Knit.Schema
+  use Knit.Model
 
   schema do
     %{street: :string,
       city: :string,
       state: :string,
       zip: :string}
+  end
+end
+
+defmodule KnitTest.DateType do
+  use Knit.Type
+
+  def convert(string) when is_binary(string) do
+    [year, month, day] = String.split(string, "-")
+
+    %{year: year,
+      month: month,
+      day: day}
   end
 end
 
@@ -60,6 +73,14 @@ defmodule KnitTest do
 
   test "convert enums" do
     assert Knit.populate(KnitTest.Person, %{"eye_color" => "blue"}).eye_color == :blue
+  end
+
+  test "convert custom types" do
+    assert Knit.populate(KnitTest.Person, %{"birth_date" => "1961-08-04"}).birth_date == %{
+      year: "1961",
+      month: "08",
+      day: "04"
+    }
   end
 
   test "populate nested struc" do
