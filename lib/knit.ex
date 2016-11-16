@@ -3,6 +3,7 @@ defmodule Knit do
   Handles populating models.
   """
 
+  @spec populate(map, module) :: struct
   def populate(params, module) do
     if !is_atom(module) || !function_exported?(module, :schema, 0) do
       raise "#{inspect(module)} does not implement Knit.Model!"
