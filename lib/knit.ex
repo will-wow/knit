@@ -3,9 +3,9 @@ defmodule Knit do
   Handles populating models.
   """
 
-  def populate(module, params) do
-    if !function_exported?(module, :schema, 0) do
-      raise "#{module} does not implement Knit.Model!"
+  def populate(params, module) do
+    if !is_atom(module) || !function_exported?(module, :schema, 0) do
+      raise "#{inspect(module)} does not implement Knit.Model!"
     end
 
     schema = module.schema
@@ -66,7 +66,7 @@ defmodule Knit do
     cond do
       is_atom(type) && function_exported?(type, :schema, 0) ->
         # If the type is a model, populate the child struct.
-        populate(type, value)
+        populate(value, type)
       is_atom(type) && function_exported?(type, :convert, 1) ->
         # If the type is a custom type, use that to convert
         convert_custom_type(type, value)

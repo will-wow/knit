@@ -44,39 +44,39 @@ defmodule KnitTest do
   doctest Knit
 
   test "populate simple struct" do
-    assert Knit.populate(KnitTest.Person, %{"full_name" => "Sarah"}).full_name == "Sarah"
+    assert Knit.populate(%{"full_name" => "Sarah"}, KnitTest.Person).full_name == "Sarah"
   end
 
   test "populate simple struct with camel case key" do
-    assert Knit.populate(KnitTest.Person, %{"fullName" => "Sarah"}).full_name == "Sarah"
+    assert Knit.populate(%{"fullName" => "Sarah"}, KnitTest.Person).full_name == "Sarah"
   end
 
   test "convert strings to integers" do
-    assert Knit.populate(KnitTest.Person, %{"age" => "30"}).age == 30
+    assert Knit.populate(%{"age" => "30"}, KnitTest.Person).age == 30
   end
 
   test "convert floats to integers" do
-    assert Knit.populate(KnitTest.Person, %{"age" => 29.6}).age == 30
+    assert Knit.populate(%{"age" => 29.6}, KnitTest.Person).age == 30
   end
 
   test "convert numbers to strings" do
-    assert Knit.populate(KnitTest.Person, %{"full_name" => 5446}).full_name == "5446"
+    assert Knit.populate(%{"full_name" => 5446}, KnitTest.Person).full_name == "5446"
   end
   
   test "convert strings to false" do
-    assert Knit.populate(KnitTest.Person, %{"is_admin" => "false"}).is_admin == false
+    assert Knit.populate(%{"is_admin" => "false"}, KnitTest.Person).is_admin == false
   end
 
   test "convert arrays of primitives" do
-    assert Knit.populate(KnitTest.Person, %{"favorite_colors" => ["olive", 0]}).favorite_colors == ["olive", "0"]
+    assert Knit.populate(%{"favorite_colors" => ["olive", 0]}, KnitTest.Person).favorite_colors == ["olive", "0"]
   end
 
   test "convert enums" do
-    assert Knit.populate(KnitTest.Person, %{"eye_color" => "blue"}).eye_color == :blue
+    assert Knit.populate(%{"eye_color" => "blue"}, KnitTest.Person).eye_color == :blue
   end
 
   test "convert custom types" do
-    assert Knit.populate(KnitTest.Person, %{"birth_date" => "1961-08-04"}).birth_date == %{
+    assert Knit.populate(%{"birth_date" => "1961-08-04"}, KnitTest.Person).birth_date == %{
       year: "1961",
       month: "08",
       day: "04"
@@ -85,14 +85,14 @@ defmodule KnitTest do
 
   test "populate nested struc" do
     assert Knit.populate(
-      KnitTest.Person,
       %{"full_name" => "Jane",
         "address" => %{
           "street" => "123 Fake Street",
           "city" => "Luner City Seven",
           "state" => "The Moon",
           "zip" => 99999
-        }}
+        }},
+      KnitTest.Person
     ).address == %KnitTest.Address{
       street: "123 Fake Street",
       city: "Luner City Seven",
@@ -103,7 +103,6 @@ defmodule KnitTest do
 
   test "convert map to list" do
     person = Knit.populate(
-      KnitTest.Person,
       %{"full_name" => "Jane",
         "previous_addresses" => %{
           "0" => %{
@@ -116,7 +115,8 @@ defmodule KnitTest do
             "city" => "Luner City Seven",
             "state" => "The Moon",
             "zip" => 99999}
-        }})
+        }},
+      KnitTest.Person)
 
     [address | _addresses ] = person.previous_addresses
 
@@ -130,9 +130,9 @@ defmodule KnitTest do
 
   test "handle map of arbitrary keys" do
     assert Knit.populate(
-      KnitTest.Person,
       %{"traits" => %{"cool" => "false",
-                      "smart" => "true"}}
+                      "smart" => "true"}},
+      KnitTest.Person
     ).traits == %{"cool" => false, "smart" => true}
   end
 end

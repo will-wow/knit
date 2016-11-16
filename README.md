@@ -61,11 +61,10 @@ defmodule KnitTest.DateType do
 end
 ```
 
-Then, call `Knit.populate(Module, string_map)` to get a Module struct, populated with the
+Then, call `Knit.populate(string_map, Module)` to get a Module struct, populated with the
 data from the map.
 ```elixir
 assert Knit.populate(
-  KnitTest.Person,
   %{"full_name" => "Jane",
     "eye_color" => "blue",
     "address" => %{
@@ -73,7 +72,8 @@ assert Knit.populate(
       "city" => "Luner City Seven",
       "state" => "The Moon",
       "zip" => 99999
-    }}
+    }},
+  KnitTest.Person
 ).address == %KnitTest.Address{
   street: "123 Fake Street",
   city: "Luner City Seven",
