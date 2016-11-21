@@ -135,4 +135,9 @@ defmodule KnitTest do
       KnitTest.Person
     ).traits == %{"cool" => false, "smart" => true}
   end
+
+  test "populate struct list" do
+    [person | _] = Knit.populate_list([%{"full_name" => "Sarah"}], KnitTest.Person)
+    assert person.full_name == "Sarah"
+  end
 end
