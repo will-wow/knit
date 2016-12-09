@@ -112,6 +112,12 @@ of the appropriate type.
 - Maps (with string keys): `field: %{map: :type}`
 Note that maps must use the key `map`.
 
+## Input Collections
+For converting from a list of string maps to a list of knit structs, call 
+```elixir
+Knit.populate_list([%{"input" => "text"}], ModuleName)
+```
+
 ## Installation
 
 If [available in Hex](https://hex.pm/docs/publish), the package can be installed as:

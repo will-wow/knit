@@ -3,6 +3,9 @@ defmodule Knit do
   Handles populating models.
   """
 
+  @doc """
+  Populate a knit struct from a map.
+  """
   @spec populate(map, module) :: struct
   def populate(params, module) do
     if !is_atom(module) || !function_exported?(module, :schema, 0) do
@@ -22,6 +25,15 @@ defmodule Knit do
 
     # Re-convert to struct
     struct(module, populated_map)
+  end
+
+  @doc """
+  Populate a list of knit structs from a list of maps.
+  """
+  @spec populate_list(map, module) :: struct
+  def populate_list(params, module) do
+    params
+    |> Enum.map(&(populate(&1, module)))
   end
 
   defp convert(schema, {field, value}) do
